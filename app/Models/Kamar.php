@@ -9,16 +9,25 @@ class Kamar extends Model
 {
     use HasFactory;
 
-    protected $table = 'kamars';
-    protected $primaryKey = 'id_kamar';
+    protected $table = 'kamar'; // Nama tabel
+
+    protected $primaryKey = 'id_kamar'; // Primary key
 
     protected $fillable = [
-        'nomor_kamar',
         'foto_kamar',
+        'nomor_kamar',
         'tipe_kamar',
+        'harga_kamar',
         'status_kamar',
         'kapasitas_kamar',
-        'harga_kamar',
-        'fasilitas_kamar',
     ];
+
+    /**
+     * Relasi Many-to-Many dengan model Fasilitas
+     * Satu kamar bisa memiliki banyak fasilitas
+     */
+    public function fasilitas()
+    {
+        return $this->belongsToMany(Fasilitas::class, 'fasilitas_kamar', 'id_kamar', 'id_fasilitas');
+    }
 }

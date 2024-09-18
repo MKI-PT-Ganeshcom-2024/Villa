@@ -10,24 +10,24 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if(Auth::user()->role == 'superadmin')
+        if(Auth::user()->role == 'Superadmin')
         {
-            return view ('superadmin.dashboard');
+            return view ('web.role.superadmin.dashboard');
         }
 
-        if(Auth::user()->role == 'owner')
+        if(Auth::user()->role == 'Owner')
         {
-            return view ('owner.dashboard');
+            return view ('web.role.owner.dashboard');
         }
 
-        if(Auth::user()->role == 'resepsionis')
+        if(Auth::user()->role == 'Resepsionis')
         {
-            return view ('resepsionis.dashboard');
+            return view ('web.role.resepsionis.dashboard');
         }
 
-        if(Auth::user()->role == 'staff')
+        if(Auth::user()->role == 'Staff')
         {
-            return view ('staff.dashboard');
+            return view ('web.role.staff.dashboard');
         }
     }
 }
