@@ -39,13 +39,12 @@ class UserController extends Controller
         return view('web.users.daftar_user', compact('users', 'layout'));
     }
 
-
     public function create()
     {
         // Dapatkan layout berdasarkan role
         $layout = $this->getLayoutBasedOnRole();
 
-        return view('web.users.tambah_user', compact('layout' ));
+        return view('web.users.tambah_user', compact('layout'));
     }
 
     public function store(Request $request)
@@ -57,15 +56,19 @@ class UserController extends Controller
             'role' => 'required',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'jabatan' => $request->jabatan,
-        ]);
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+                'jabatan' => $request->jabatan,
+            ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+            return redirect()->route('users.index')->with('success', 'User berhasil ditambahakan.');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')->with('error', 'Gagal menambahkan user.');
+        }
     }
 
     public function edit(User $user)
@@ -84,20 +87,28 @@ class UserController extends Controller
             'role' => 'required',
         ]);
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'jabatan' => $request->jabatan,
-            'password' => $request->password ? Hash::make($request->password) : $user->password,
-        ]);
+        try {
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role,
+                'jabatan' => $request->jabatan,
+                'password' => $request->password ? Hash::make($request->password) : $user->password,
+            ]);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+            return redirect()->route('users.index')->with('success', 'Data user berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')->with('error', 'Gagal memperbarui user.');
+        }
     }
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        try {
+            $user->delete();
+            return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')->with('error', 'Gagal menghapus user.');
+        }
     }
 }

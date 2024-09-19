@@ -10,23 +10,25 @@ use Illuminate\Support\Facades\Storage;
 
 class KamarController extends Controller
 {
-
     public function removePhoto(Request $request, $id_kamar)
     {
         $kamar = Kamar::findOrFail($id_kamar);
 
-        if ($request->removePhoto) {
-            if ($kamar->foto_kamar) {
-                // Hapus foto dari disk
-                Storage::delete('public/uploads/kamar/' . $kamar->foto_kamar);
+        try {
+            if ($request->removePhoto) {
+                if ($kamar->foto_kamar) {
+                    // Hapus foto dari disk
+                    Storage::delete('public/uploads/kamar/' . $kamar->foto_kamar);
 
-                // Set foto kamar menjadi null di database
-                $kamar->foto_kamar = null;
-                $kamar->save();
+                    // Set foto kamar menjadi null di database
+                    $kamar->foto_kamar = null;
+                    $kamar->save();
+                }
             }
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus foto']);
         }
-
-        return response()->json(['success' => true]);
     }
 
     private function getLayoutBasedOnRole()
@@ -47,7 +49,6 @@ class KamarController extends Controller
                 return 'web.default.layouts.app'; // Layout default jika role tidak sesuai
         }
     }
-
 
     public function index()
     {
@@ -83,33 +84,36 @@ class KamarController extends Controller
             'foto_kamar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10048',
         ]);
     
-        // Proses unggah foto jika ada file yang diunggah
-        if ($request->hasFile('foto_kamar')) {
-            $image = $request->file('foto_kamar');
-            $imageName = time() . '_' . $image->getClientOriginalName(); // Generate nama file unik
-            $image->move(public_path('uploads/kamar'), $imageName); // Simpan ke folder 'uploads/kamar'
-        } else {
-            $imageName = null; // Jika tidak ada foto yang diunggah
+        try {
+            // Proses unggah foto jika ada file yang diunggah
+            if ($request->hasFile('foto_kamar')) {
+                $image = $request->file('foto_kamar');
+                $imageName = time() . '_' . $image->getClientOriginalName(); // Generate nama file unik
+                $image->move(public_path('uploads/kamar'), $imageName); // Simpan ke folder 'uploads/kamar'
+            } else {
+                $imageName = null; // Jika tidak ada foto yang diunggah
+            }
+    
+            // Simpan data kamar ke database
+            $kamar = Kamar::create([
+                'nomor_kamar' => $request->nomor_kamar,
+                'tipe_kamar' => $request->tipe_kamar,
+                'harga_kamar' => $request->harga_kamar,
+                'status_kamar' => $request->status_kamar,
+                'kapasitas_kamar' => $request->kapasitas_kamar,
+                'foto_kamar' => $imageName, // Menyimpan nama file foto ke database
+            ]);
+    
+            // Simpan relasi dengan fasilitas ke tabel pivot
+            $kamar->fasilitas()->attach($request->id_fasilitas);
+    
+            // Redirect ke halaman daftar kamar dengan pesan sukses
+            return redirect()->route('kamar.index')->with('success', 'Kamar berhasil ditambahkan');
+        } catch (\Exception $e) {
+            return redirect()->route('kamar.index')->with('error', 'Gagal menambahkan kamar');
         }
-    
-        // Simpan data kamar ke database
-        $kamar = Kamar::create([
-            'nomor_kamar' => $request->nomor_kamar,
-            'tipe_kamar' => $request->tipe_kamar,
-            'harga_kamar' => $request->harga_kamar,
-            'status_kamar' => $request->status_kamar,
-            'kapasitas_kamar' => $request->kapasitas_kamar,
-            'foto_kamar' => $imageName, // Menyimpan nama file foto ke database
-        ]);
-    
-        // Simpan relasi dengan fasilitas ke tabel pivot
-        $kamar->fasilitas()->attach($request->id_fasilitas);
-    
-        // Redirect ke halaman daftar kamar dengan pesan sukses
-        return redirect()->route('kamar.index')->with('success', 'Kamar berhasil ditambahkan');
     }
 
-    
     public function edit($id)
     {
         // Dapatkan layout berdasarkan role
@@ -130,50 +134,63 @@ class KamarController extends Controller
             'harga_kamar' => 'required|numeric',
             'status_kamar' => 'required|string',
             'kapasitas_kamar' => 'required|integer',
-            'foto_kamar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10048', // ukuran max 2MB
-            'fasilitas_kamar' => 'nullable|array',
+            'foto_kamar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10048', // ukuran max 10MB
+            'id_fasilitas' => 'nullable|array',
         ]);
-    
-        // Ambil data kamar yang akan diupdate
-        $kamar = Kamar::findOrFail($id);
-    
-        // Logika untuk menghapus foto lama jika ada permintaan hapus atau ada file baru
-        if ($request->input('hapus_foto') === 'true' || $request->hasFile('foto_kamar')) {
-            // Hapus foto lama dari folder
-            if ($kamar->foto_kamar && file_exists(public_path('uploads/kamar/' . $kamar->foto_kamar))) {
-                unlink(public_path('uploads/kamar/' . $kamar->foto_kamar));
+
+        try {
+            // Ambil data kamar yang akan diupdate
+            $kamar = Kamar::findOrFail($id);
+
+            // Logika untuk menghapus foto lama jika ada permintaan hapus atau ada file baru
+            if ($request->input('hapus_foto') === 'true' || $request->hasFile('foto_kamar')) {
+                // Hapus foto lama dari folder
+                if ($kamar->foto_kamar && file_exists(public_path('uploads/kamar/' . $kamar->foto_kamar))) {
+                    unlink(public_path('uploads/kamar/' . $kamar->foto_kamar));
+                }
+                $kamar->foto_kamar = null;
             }
-            $kamar->foto_kamar = null;
+
+            // Jika ada file foto baru, proses upload
+            if ($request->hasFile('foto_kamar')) {
+                $image = $request->file('foto_kamar');
+                $imageName = time() . '.' . $image->extension();
+                $image->move(public_path('uploads/kamar'), $imageName);
+                $kamar->foto_kamar = $imageName;
+            }
+
+            // Update data kamar lainnya
+            $kamar->nomor_kamar = $request->input('nomor_kamar');
+            $kamar->tipe_kamar = $request->input('tipe_kamar');
+            $kamar->harga_kamar = $request->input('harga_kamar');
+            $kamar->status_kamar = $request->input('status_kamar');
+            $kamar->kapasitas_kamar = $request->input('kapasitas_kamar');
+
+            // Simpan perubahan
+            $kamar->save();
+
+            // Sinkronkan fasilitas kamar (update tabel pivot)
+            if ($request->has('id_fasilitas')) {
+                $kamar->fasilitas()->sync($request->input('id_fasilitas'));
+            } else {
+                // Jika fasilitas tidak dipilih, hapus semua fasilitas terkait
+                $kamar->fasilitas()->detach();
+            }
+
+            return redirect()->route('kamar.index')->with('success', 'Data kamar berhasil diupdate');
+        } catch (\Exception $e) {
+            return redirect()->route('kamar.index')->with('error', 'Gagal memperbarui kamar');
         }
-    
-        // Jika ada file foto baru, proses upload
-        if ($request->hasFile('foto_kamar')) {
-            $image = $request->file('foto_kamar');
-            $imageName = time() . '.' . $image->extension();
-            $image->move(public_path('uploads/kamar'), $imageName);
-            $kamar->foto_kamar = $imageName;
-        }
-    
-        // Update data kamar lainnya
-        $kamar->nomor_kamar = $request->input('nomor_kamar');
-        $kamar->tipe_kamar = $request->input('tipe_kamar');
-        $kamar->harga_kamar = $request->input('harga_kamar');
-        $kamar->status_kamar = $request->input('status_kamar');
-        $kamar->kapasitas_kamar = $request->input('kapasitas_kamar');
-    
-        // Simpan perubahan
-        $kamar->save();
-    
-        return redirect()->route('kamar.index')->with('success', 'Data kamar berhasil diupdate');
     }
-    
-     
-    
 
     public function destroy($id)
     {
-        // Hapus data kamar
-        Kamar::find($id)->delete();
-        return redirect()->route('kamar.index')->with('success', 'Kamar berhasil dihapus');
+        try {
+            // Hapus data kamar
+            Kamar::findOrFail($id)->delete();
+            return redirect()->route('kamar.index')->with('success', 'Kamar berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->route('kamar.index')->with('error', 'Gagal menghapus kamar');
+        }
     }
 }

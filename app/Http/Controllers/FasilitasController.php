@@ -49,10 +49,13 @@ class FasilitasController extends Controller
         $request->validate([
             'nama_fasilitas' => 'required|max:45',
         ]);
-
-        Fasilitas::create($request->all());
-
-        return redirect()->route('fasilitas.index')->with('success', 'Fasilitas berhasil ditambahkan');
+    
+        try {
+            Fasilitas::create($request->all());
+            return redirect()->route('fasilitas.index')->with('success', 'Fasilitas berhasil ditambahkan');
+        } catch (\Exception $e) {
+            return redirect()->route('fasilitas.index')->with('error', 'Gagal menambahkan fasilitas');
+        }
     }
 
     public function edit($id)
@@ -69,16 +72,23 @@ class FasilitasController extends Controller
         $request->validate([
             'nama_fasilitas' => 'required|max:45',
         ]);
-
-        $fasilitas = Fasilitas::find($id);
-        $fasilitas->update($request->all());
-
-        return redirect()->route('fasilitas.index')->with('success', 'Fasilitas berhasil diperbarui');
+    
+        try {
+            $fasilitas = Fasilitas::find($id);
+            $fasilitas->update($request->all());
+            return redirect()->route('fasilitas.index')->with('success', 'Fasilitas berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->route('fasilitas.index')->with('error', 'Gagal memperbarui fasilitas');
+        }
     }
 
     public function destroy($id)
     {
-        Fasilitas::find($id)->delete();
-        return redirect()->route('fasilitas.index')->with('success', 'Fasilitas berhasil dihapus');
+        try {
+            Fasilitas::find($id)->delete();
+            return redirect()->route('fasilitas.index')->with('success', 'Fasilitas berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->route('fasilitas.index')->with('error', 'Gagal menghapus fasilitas');
+        }
     }
 }

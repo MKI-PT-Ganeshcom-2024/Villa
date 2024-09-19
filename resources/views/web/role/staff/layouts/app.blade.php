@@ -62,11 +62,11 @@
 
             <!-- Nav Item - Master Data -->
 
-            <li class="nav-item {{ Request::is('fasilitas*') ? 'active' : '' }}">
+            {{-- <li class="nav-item {{ Request::is('fasilitas*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('fasilitas.index') }}">
                     <i class="fas fa-fw fa-chalkboard-teacher"></i>
                     <span>Fasilitas</span></a>
-            </li>
+            </li> --}}
 
             <li class="nav-item {{ Request::is('kamar*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('kamar.index') }}">
@@ -75,11 +75,11 @@
                 </a>
             </li>                      
 
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="{{ route('users.index') }}">
                     <i class="fas fa-fw fa-key"></i>
                     <span>Manajemen User</span></a>
-            </li>
+            </li> --}}
 
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">
