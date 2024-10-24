@@ -2,35 +2,23 @@
 @section('content')
 <div class="container-fluid">
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Daftar User</h1>
-    <h2 class="h6 mb-2">
-        <span class="text-primary">
-            @if (Route::is('users.create'))
-                <a href="{{ route('users.index') }}" class="text-primary">Manajemen Users</a> -> 
-                <a href="{{ route('users.create') }}" class="text-primary">Tambah User</a>
-            @elseif (Route::is('users.edit'))
-                <a href="{{ route('users.index') }}" class="text-primary">Manajemen Users</a> -> 
-                <a href="{{ route('users.edit', $user->id) }}" class="text-primary">Edit User</a>
-            @else
-                <a href="{{ route('users.index') }}" class="text-primary">Manajemen Users</a>
-            @endif
-        </span>
-    </h2>
-
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">Tambah User</a>
+        <div class="card-header py-3 d-flex justify-content-between">
+            <h1 class="h3 mb-2 text-gray-800">Daftar User</h1>
+            <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">
+                <i class="fas fa-plus"></i> Tambah User</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-primary">
                         <tr>
                             <th>No.</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
                             <th>Jabatan</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -48,12 +36,27 @@
                                     <td>{{ $user->role }}</td>
                                     <td>{{ $user->jabatan }}</td>
                                     <td>
-                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning">Edit</a>
-                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline-block;">
+                                        <span class="badge-status {{ $user->status_user === 'Aktif' ? 'badge-success' : 'badge-danger' }}">
+                                            {{ $user->status_user }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <!-- Tombol Edit dan Hapus -->
+                                        @if ($user->role !== 'Owner')
+                                        <!-- Tombol Edit -->
+                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning">
+                                            <i class="fas fa-edit"></i> <!-- Icon edit -->
+                                        </a>
+
+                                        <!-- Tombol Hapus -->
+                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline-block;" class="form-delete">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Hapus</button>
+                                            <button class="btn btn-danger btn-delete" type="button" data-id="{{ $user->id}}" title="Hapus">
+                                                <i class="fas fa-trash-alt"></i> <!-- Icon Hapus -->
+                                            </button>
                                         </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -89,5 +92,27 @@
     });
 </script>
 @endif
+
+<script>
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function () {
+            const fasilitasId = this.getAttribute('data-id');
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "User yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.closest('form').submit();
+                }
+            })
+        });
+    });
+</script>
 
 @endsection

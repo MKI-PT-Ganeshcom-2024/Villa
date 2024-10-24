@@ -41,6 +41,8 @@ class KamarController extends Controller
                 return 'web.role.superadmin.layouts.app';
             case 'Owner':
                 return 'web.role.owner.layouts.app';
+            case 'Admin':
+                return 'web.role.admin.layouts.app';
             case 'Resepsionis':
                 return 'web.role.resepsionis.layouts.app';
             case 'Staff':
@@ -52,7 +54,8 @@ class KamarController extends Controller
 
     public function index()
     {
-        $kamar = Kamar::with('fasilitas')->get(); // Ambil semua data kamar dengan fasilitas
+        // Ambil semua data kamar dengan fasilitas
+        $kamar = Kamar::with('fasilitas')->orderBy('nomor_kamar', 'asc')->get(); 
 
         // Dapatkan layout berdasarkan role
         $layout = $this->getLayoutBasedOnRole();
@@ -75,15 +78,16 @@ class KamarController extends Controller
     {
         // Validasi input termasuk validasi untuk foto
         $request->validate([
-            'nomor_kamar' => 'required|max:50',
+            'nomor_kamar' => 'required|max:50|unique:kamar,nomor_kamar', // Aturan untuk keunikan nomor kamar
             'tipe_kamar' => 'required|max:50',
-            'harga_kamar' => 'required|numeric',
-            'status_kamar' => 'required|in:Tersedia,Booked',
+            'harga_kamar_raw' => 'required|numeric',
             'kapasitas_kamar' => 'required|integer',
             'id_fasilitas' => 'required|array',
             'foto_kamar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10048',
+        ],[
+            'nomor_kamar.unique' => 'Nomor kamar sudah ada. Silakan masukkan nomor kamar yang berbeda.'
         ]);
-    
+        
         try {
             // Proses unggah foto jika ada file yang diunggah
             if ($request->hasFile('foto_kamar')) {
@@ -94,12 +98,12 @@ class KamarController extends Controller
                 $imageName = null; // Jika tidak ada foto yang diunggah
             }
     
-            // Simpan data kamar ke database
+            // Simpan data kamar ke database dengan status default 'Tersedia'
             $kamar = Kamar::create([
                 'nomor_kamar' => $request->nomor_kamar,
                 'tipe_kamar' => $request->tipe_kamar,
-                'harga_kamar' => $request->harga_kamar,
-                'status_kamar' => $request->status_kamar,
+                'harga_kamar' => $request->harga_kamar_raw,
+                'status_kamar' => 'Tersedia', // Status default
                 'kapasitas_kamar' => $request->kapasitas_kamar,
                 'foto_kamar' => $imageName, // Menyimpan nama file foto ke database
             ]);
@@ -107,12 +111,12 @@ class KamarController extends Controller
             // Simpan relasi dengan fasilitas ke tabel pivot
             $kamar->fasilitas()->attach($request->id_fasilitas);
     
-            // Redirect ke halaman daftar kamar dengan pesan sukses
             return redirect()->route('kamar.index')->with('success', 'Kamar berhasil ditambahkan');
         } catch (\Exception $e) {
-            return redirect()->route('kamar.index')->with('error', 'Gagal menambahkan kamar');
+            return redirect()->route('kamar.index')->with('error', 'Gagal menambahkan kamar: ' . $e->getMessage());
         }
-    }
+    }    
+    
 
     public function edit($id)
     {
@@ -129,10 +133,8 @@ class KamarController extends Controller
     {
         // Validasi input
         $request->validate([
-            'nomor_kamar' => 'required|string|max:255',
             'tipe_kamar' => 'required|string|max:255',
-            'harga_kamar' => 'required|numeric',
-            'status_kamar' => 'required|string',
+            'harga_kamar' => 'required|string', // Ubah ke string untuk memudahkan pengolahan
             'kapasitas_kamar' => 'required|integer',
             'foto_kamar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10048', // ukuran max 10MB
             'id_fasilitas' => 'nullable|array',
@@ -160,10 +162,8 @@ class KamarController extends Controller
             }
 
             // Update data kamar lainnya
-            $kamar->nomor_kamar = $request->input('nomor_kamar');
             $kamar->tipe_kamar = $request->input('tipe_kamar');
-            $kamar->harga_kamar = $request->input('harga_kamar');
-            $kamar->status_kamar = $request->input('status_kamar');
+            $kamar->harga_kamar = intval(str_replace('.', '', $request->input('harga_kamar')));
             $kamar->kapasitas_kamar = $request->input('kapasitas_kamar');
 
             // Simpan perubahan

@@ -61,23 +61,24 @@
             </div>
 
             <!-- Nav Item - Master Data -->
+
+            <li class="nav-item {{ Request::is('fasilitas*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('fasilitas.index') }}">
+                    <i class="fas fa-fw fa-chalkboard-teacher"></i>
+                    <span>Fasilitas</span></a>
+            </li>
+
             <li class="nav-item {{ Request::is('kamar*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('kamar.daftar_kamar') }}">
+                <a class="nav-link" href="{{ route('kamar.index') }}">
                     <i class="fas fa-fw fa-key"></i>
                     <span>Manajemen Kamar</span>
                 </a>
             </li>                      
 
-            <li class="nav-item {{ Request::is('fasilitas*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('fasilitas.daftar_fasilitas') }}">
-                    <i class="fas fa-fw fa-chalkboard-teacher"></i>
-                    <span>Fasilitas</span></a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="kamar/daftarkamar">
-                    <i class="fas fa-fw fa-key"></i>
-                    <span>--</span></a>
+            <li class="nav-item {{ Request::is('users*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('users.index') }}">
+                    <i class="fas fa-user"></i>
+                    <span>Manajemen User</span></a>
             </li>
 
             <!-- Sidebar Toggler (Sidebar) -->
@@ -102,19 +103,16 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    <!-- Topbar Search -->
-                    {{-- <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
+                    <!-- Topbar Date -->
+                    <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                        <div class="text-primary">
+                            <h4>
+                                <!-- Menampilkan hari, tanggal, bulan, dan tahun -->
+                                {{ \Carbon\Carbon::now()->format('l, F j, Y') }}
+                            </h4>
                         </div>
-                    </form> --}}
+                    </div>
+                    
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">

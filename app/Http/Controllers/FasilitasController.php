@@ -18,6 +18,8 @@ class FasilitasController extends Controller
                 return 'web.role.superadmin.layouts.app';
             case 'Owner':
                 return 'web.role.owner.layouts.app';
+            case 'Admin':
+                    return 'web.role.admin.layouts.app';  
             case 'Resepsionis':
                 return 'web.role.resepsionis.layouts.app';
             case 'Staff':
@@ -29,12 +31,13 @@ class FasilitasController extends Controller
 
     public function index()
     {
-          // Dapatkan layout berdasarkan role
-          $layout = $this->getLayoutBasedOnRole();
+        // Dapatkan layout berdasarkan role
+        $layout = $this->getLayoutBasedOnRole();
 
-        $fasilitas = Fasilitas::all(); // Ambil semua data fasilitas
+        // Ambil semua data fasilita
+        $fasilitas = Fasilitas::orderBy('nama_fasilitas', 'asc')->get(); 
         return view('web.fasilitas.daftar_fasilitas', compact('fasilitas','layout'));
-    }
+}
 
     public function create()
     {

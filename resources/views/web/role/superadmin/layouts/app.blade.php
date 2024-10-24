@@ -13,12 +13,13 @@
 
     <!-- Custom fonts for this template-->
     <link href="{{ asset('startbootstrap/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;700&display=swap" rel="stylesheet">
+
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('startbootstrap/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('startbootstrap/css/sb-admin-2-custom.css') }}" rel="stylesheet">
 
      <!-- Custom styles for this page -->
      <link href="{{ asset('startbootstrap/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
@@ -31,14 +32,14 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav bg-white sidebar sidebar-light accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
                 <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                    <i class="fas fa-house-user text-primary"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">Villa Sanur <sup></sup></div>
+                <div class="sidebar-brand-text mx-3 text-primary">Villa Sanur</div>
             </a>
 
             <!-- Divider -->
@@ -47,7 +48,7 @@
             <!-- Nav Item - Dashboard -->
             <li class="nav-item {{ Request::is('dashboard') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('dashboard') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-tachometer-alt text-primary"></i>
                     <span>Dashboard</span>
                 </a>
             </li>            
@@ -56,29 +57,40 @@
             <hr class="sidebar-divider">
 
             <!-- Heading -->
-            <div class="sidebar-heading">
+            <div class="sidebar-heading text-primary">
                 Master Data
             </div>
 
             <!-- Nav Item - Master Data -->
-
             <li class="nav-item {{ Request::is('fasilitas*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('fasilitas.index') }}">
-                    <i class="fas fa-fw fa-chalkboard-teacher"></i>
+                    <i class="fas fa-fw fa-chalkboard-teacher text-primary"></i>
                     <span>Fasilitas</span></a>
             </li>
 
             <li class="nav-item {{ Request::is('kamar*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('kamar.index') }}">
-                    <i class="fas fa-fw fa-key"></i>
+                    <i class="fas fa-fw fa-key text-primary"></i>
                     <span>Manajemen Kamar</span>
                 </a>
             </li>                      
 
-            <li class="nav-item">
+            <li class="nav-item {{ Request::is('users*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('users.index') }}">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user text-primary"></i>
                     <span>Manajemen User</span></a>
+            </li>
+
+            <li class="nav-item {{ Request::is('layanan*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('layanan.index') }}">
+                    <i class="fas fa-concierge-bell text-primary"></i>
+                    <span>Layanan Tambahan</span></a>
+            </li>
+
+            <li class="nav-item {{ Request::is('penugasanStaff*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('penugasan_staff.index') }}">
+                    <i class="fas fa-concierge-bell text-primary"></i>
+                    <span>Penugasan Staff</span></a>
             </li>
 
             <!-- Sidebar Toggler (Sidebar) -->
@@ -95,81 +107,81 @@
             <!-- Main Content -->
             <div id="content">
 
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-primary topbar mb-4 static-top shadow">
+            
+            <!-- Sidebar Toggle (Topbar) -->
+            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                <i class="fa fa-bars"></i>
+            </button>
 
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
+            <!-- Topbar Date -->
+            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                <div class="text-white">
+                    <h4>
+                        <!-- Menampilkan hari, tanggal, bulan, dan tahun -->
+                        {{ \Carbon\Carbon::now()->format('l, F j, Y') }}
+                    </h4>
+                </div>
+            </div>
 
-                    <!-- Topbar Date -->
-                    <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
-                        <div class="text-primary">
-                            <h4>
-                                <!-- Menampilkan hari, tanggal, bulan, dan tahun -->
-                                {{ \Carbon\Carbon::now()->format('l, F j, Y') }}
-                            </h4>
-                        </div>
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+
+                <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                <li class="nav-item dropdown no-arrow d-sm-none">
+                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-search fa-fw"></i>
+                    </a>
+                    <!-- Dropdown - Messages -->
+                    <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                        aria-labelledby="searchDropdown">
+                        <form class="form-inline mr-auto w-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light border-0 small"
+                                    placeholder="Search for..." aria-label="Search"
+                                    aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    
+                </li>
 
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
+                <div class="topbar-divider d-none d-sm-block"></div>
 
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                        <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-search fa-fw"></i>
-                            </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Search for..." aria-label="Search"
-                                            aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
+                <!-- Nav Item - User Information -->
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="mr-2 d-none d-lg-inline text-white small">{{ Auth::user()->name }}</span>
+                        <img class="img-profile rounded-circle"
+                            src="{{ Auth::user()->profile_photo_url }}">
+                    </a>
+                    <!-- Dropdown - User Information -->
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                        aria-labelledby="userDropdown">
+                        <a class="dropdown-item"  href="{{ route('profile.show') }}">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-200"></i>
+                            Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-200"></i>
+                            Logout
+                        </a>
+                    </div>
+                </li>
 
-                        <div class="topbar-divider d-none d-sm-block"></div>
+            </ul>
 
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                                <img class="img-profile rounded-circle"
-                                    src="{{ Auth::user()->profile_photo_url }}">
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item"  href="{{ route('profile.show') }}">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
+        </nav>
+        <!-- End of Topbar -->
 
-                    </ul>
-
-                </nav>
-                <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
                 @yield('content')
@@ -199,24 +211,35 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+   <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg">
+                <!-- Modal Header -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="logoutModalLabel">
+                        <i class="fas fa-exclamation-triangle"></i> Ready to Leave?
+                    </h5>
+                    <button class="close text-white" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+
+                <!-- Modal Body -->
+                <div class="modal-body text-center">
+                    <i class="fas fa-sign-out-alt fa-3x text-primary mb-3"></i>
+                    <p class="mb-4">Apakah Anda yakin ingin logout? Klik "Logout" untuk mengakhiri sesi Anda saat ini.</p>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer justify-content-center">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="btn btn-primary">
-                            Logout
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i> Logout
                         </button>
                     </form>
                 </div>

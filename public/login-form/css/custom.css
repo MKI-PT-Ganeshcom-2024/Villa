@@ -1,0 +1,32 @@
+.login-container {
+    backdrop-filter: blur(15px); /* Efek buram */
+    background: rgba(255, 255, 255, 0.3); /* Background dengan transparansi */
+    border-radius: 15px; /* Border melengkung */
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan untuk memperjelas form */
+}
+
+.forgot-pass {
+    margin-left: 10px; /* Jarak antara Remember Me dan Forgot Password */
+}
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Warna hover baru untuk button login */
+.btn-primary:hover {
+    background-color: #0056b3; /* Ganti dengan warna biru lebih gelap */
+    border-color: #004085; /* Warna border saat hover */
+}
+
+/* Warna saat button ditekan (clicked) */
+.btn-primary:active {
+    background-color: #004085; /* Warna lebih gelap saat tombol diklik */
+    border-color: #003366; /* Border lebih gelap saat tombol diklik */
+}
+
+/* Tambahan untuk menghilangkan fokus outline pada button setelah diklik */
+.btn-primary:focus {
+    box-shadow: none;
+}

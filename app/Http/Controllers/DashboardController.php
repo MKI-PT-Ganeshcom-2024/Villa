@@ -19,6 +19,11 @@ class DashboardController extends Controller
         {
             return view ('web.role.owner.dashboard');
         }
+        
+        if(Auth::user()->role == 'Admin')
+        {
+            return view ('web.role.admin.dashboard');
+        }
 
         if(Auth::user()->role == 'Resepsionis')
         {
